@@ -1,8 +1,8 @@
-% Please insert the names and email addresses of the group members:
-%
-%
-
 %%clingo 0 asp/instances/ex01.lp -
+
+%# This one is where ChatGPT gave me some tips (it wrote some nonsense, but I massaged it so it worked).
+%# Basically: use cardinality constraints. I'm not finding that this makes any difference in terms of efficiency, but
+%# it does look a bit more compact.
 
 subgrid_size(3).
 
@@ -23,24 +23,21 @@ sudoku(X,Y,N) :- initial(X,Y,N).
 1 { sudoku(X,Y,N) : n(N) } 1 :- x(X), y(Y), not initial(X,Y,_).
 
 %# no repeats in the row
-:- sudoku(X,Y1,N), sudoku(X,Y2,N), not Y1 == Y2.
+:- n(N), x(X), not 1 { sudoku(X,Y,N) : y(Y) } 1.
 
 %# no repeats in the column
-:- sudoku(X1,Y,N), sudoku(X2,Y,N), not X1 == X2.
+:- n(N), y(Y), not 1 { sudoku(X,Y,N) : x(X) } 1.
 
 %# no repeats in the subgrid
 
-%# Hints:
-%# - For subgrid_size(s), subgrids can be identified by labels 0..s*s-1
-%# - A cell (x,y) can be mapped to the subgrid labeled (((x-1)/s)*s + (y-1)/s)
-
-:-
+submap(X,Y,G) :-
     subgrid_size(S),
-    sudoku(X1,Y1,N),
-    sudoku(X2,Y2,N),
-    not X1 == X2, not Y1 == Y2,
-    Sub1 = (((X1 - 1) / S) * S + (Y1 - 1) / S),
-    Sub2 = (((X2 - 1) / S) * S + (Y2 - 1) / S),
-    Sub1 == Sub2.
+    x(X), y(Y),
+    G = ((X - 1) / S) * S + (Y - 1) / S.
+
+subgrid(0..(S * S - 1)) :- subgrid_size(S).
+
+:- subgrid_size(S), n(N), subgrid(Sub),
+   2 { sudoku(X,Y,N) : submap(X,Y,Sub) }.
 
 #show sudoku/3.
