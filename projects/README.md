@@ -2,8 +2,8 @@
 
 ## Projects
 
-- [ ] **Sudoku**
-- [ ] Yosenabe
+- [X] Sudoku
+- [ ] **Yosenabe**
 - [ ] Minotaur
 - [ ] Light
 - [ ] Seeknumbers
